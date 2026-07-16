@@ -1,0 +1,364 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start job timer
+        run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+      - name: Install dependencies and run quality checks
+        run: |
+          timed() {
+            label="$1"
+            shift
+            start=$(date +%s)
+            set +e
+            "$@"
+            status=$?
+            set -e
+            elapsed=$(( $(date +%s) - start ))
+            line="${label}: ${elapsed}s (exit ${status})"
+            echo "$line"
+            echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+            return "$status"
+          }
+          check_forbidden_tracked_paths() {
+            tracked=$(git ls-files -ci --exclude-standard)
+            if [ -n "$tracked" ]; then
+              echo "Tracked paths matched by .gitignore:"
+              echo "$tracked"
+              return 1
+            fi
+          }
+          timed "Dependency install" python -m pip install -e ".[dev]"
+          check_status=0
+          check_start=$(date +%s)
+          timed "Check: forbidden tracked paths" check_forbidden_tracked_paths || check_status=$?
+          timed "Check: ruff format" ruff format --check . || check_status=$?
+          timed "Check: ruff lint" ruff check . || check_status=$?
+          timed "Check: mypy" mypy observable_library || check_status=$?
+          check_total=$(( $(date +%s) - check_start ))
+          line="Check total: ${check_total}s (limit 120s)"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+          (( check_total <= 120 )) || check_status=1
+          exit "$check_status"
+      - name: Record job timing
+        if: always()
+        run: |
+          elapsed=$(( $(date +%s) - JOB_START ))
+          line="Job total (quality): ${elapsed}s"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+
+  current-tests:
+    name: Python ${{ matrix.python-version }} / current Torch
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - name: Start job timer
+        run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies and run default tests
+        run: |
+          timed() {
+            label="$1"
+            shift
+            start=$(date +%s)
+            set +e
+            "$@"
+            status=$?
+            set -e
+            elapsed=$(( $(date +%s) - start ))
+            line="${label}: ${elapsed}s (exit ${status})"
+            echo "$line"
+            echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+            return "$status"
+          }
+          timed "Dependency install" python -m pip install -e ".[dev]"
+          check_status=0
+          check_start=$(date +%s)
+          timed "Check: versions" python -c 'import platform, torch; print(platform.python_version(), torch.__version__)' || check_status=$?
+          timed "Check: default pytest" python -m pytest tests -q || check_status=$?
+          check_total=$(( $(date +%s) - check_start ))
+          line="Check total: ${check_total}s (limit 120s)"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+          (( check_total <= 120 )) || check_status=1
+          exit "$check_status"
+      - name: Record job timing
+        if: always()
+        run: |
+          elapsed=$(( $(date +%s) - JOB_START ))
+          line="Job total (current tests): ${elapsed}s"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+
+  minimum-tests:
+    name: Python 3.10 / Torch 2.4.1
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start job timer
+        run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+      - name: Install minimum dependencies and run default tests
+        run: |
+          timed() {
+            label="$1"
+            shift
+            start=$(date +%s)
+            set +e
+            "$@"
+            status=$?
+            set -e
+            elapsed=$(( $(date +%s) - start ))
+            line="${label}: ${elapsed}s (exit ${status})"
+            echo "$line"
+            echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+            return "$status"
+          }
+          timed "Dependency install" python -m pip install -e ".[dev]" "torch==2.4.1"
+          check_status=0
+          check_start=$(date +%s)
+          timed "Check: minimum Torch" python -c 'import torch; print(torch.__version__); assert torch.__version__.split("+")[0] == "2.4.1"' || check_status=$?
+          timed "Check: default pytest" python -m pytest tests -q || check_status=$?
+          check_total=$(( $(date +%s) - check_start ))
+          line="Check total: ${check_total}s (limit 120s)"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+          (( check_total <= 120 )) || check_status=1
+          exit "$check_status"
+      - name: Record job timing
+        if: always()
+        run: |
+          elapsed=$(( $(date +%s) - JOB_START ))
+          line="Job total (minimum tests): ${elapsed}s"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+
+  advisory-tests:
+    name: Python 3.13 / current Torch (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - name: Start job timer
+        run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install dependencies and run advisory tests
+        run: |
+          timed() {
+            label="$1"
+            shift
+            start=$(date +%s)
+            set +e
+            "$@"
+            status=$?
+            set -e
+            elapsed=$(( $(date +%s) - start ))
+            line="${label}: ${elapsed}s (exit ${status})"
+            echo "$line"
+            echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+            return "$status"
+          }
+          timed "Dependency install" python -m pip install -e ".[dev]"
+          check_status=0
+          check_start=$(date +%s)
+          timed "Check: versions" python -c 'import platform, torch; print(platform.python_version(), torch.__version__)' || check_status=$?
+          timed "Check: default pytest" python -m pytest tests -q || check_status=$?
+          check_total=$(( $(date +%s) - check_start ))
+          line="Check total: ${check_total}s (limit 120s)"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+          (( check_total <= 120 )) || check_status=1
+          exit "$check_status"
+      - name: Record job timing
+        if: always()
+        run: |
+          elapsed=$(( $(date +%s) - JOB_START ))
+          line="Job total (advisory tests): ${elapsed}s"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    name: Build and verify distributions
+    needs: [quality, current-tests, minimum-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Start job timer
+        run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build and verify distributions
+        run: |
+          timed() {
+            label="$1"
+            shift
+            start=$(date +%s)
+            set +e
+            "$@"
+            status=$?
+            set -e
+            elapsed=$(( $(date +%s) - start ))
+            line="${label}: ${elapsed}s (exit ${status})"
+            echo "$line"
+            echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+            return "$status"
+          }
+          prepare_clean_environment() {
+            python -m venv "$VENV_DIR" &&
+              mkdir -p "$RUN_DIR" &&
+              cp -R tests examples docs scripts pyproject.toml pytest.ini README.md LICENSE MANIFEST.in .github "$RUN_DIR/" &&
+              mkdir -p "$RUN_DIR/observable_library" &&
+              cp observable_library/py.typed "$RUN_DIR/observable_library/"
+          }
+          install_wheel() {
+            "$VENV_DIR/bin/python" -m pip install "$WHEEL" &&
+              "$VENV_DIR/bin/python" -m pip install "pytest>=8" "mypy>=1.10"
+          }
+          install_sdist() {
+            "$VENV_DIR/bin/python" -m pip uninstall -y observable-library &&
+              "$VENV_DIR/bin/python" -m pip install --no-deps "$SDIST"
+          }
+          run_examples() {
+            for example in examples/*.py; do
+              echo "Running $example"
+              python "$example" || return $?
+            done
+          }
+          inspect_artifacts() {
+            python tests/fixtures/inspect_distributions.py "$WHEEL" "$SDIST"
+          }
+
+          timed "Dependency install (build)" python -m pip install "build>=1.2"
+          timed "Check: build sdist and wheel" python -m build
+          timed "Check: verify artifacts" bash -c 'compgen -G "dist/*.tar.gz" && compgen -G "dist/*.whl"'
+
+          WHEEL=$(python -c 'from pathlib import Path; print(next(Path("dist").glob("*.whl")).resolve())')
+          SDIST=$(python -c 'from pathlib import Path; print(next(Path("dist").glob("*.tar.gz")).resolve())')
+          timed "Dependency install (release checks)" python -m pip install "twine>=6"
+          timed "Check: strict Twine metadata" python -m twine check --strict dist/*
+          timed "Check: inspect wheel and sdist contents" inspect_artifacts
+
+          RUN_DIR="$RUNNER_TEMP/observable-library-wheel"
+          VENV_DIR="$RUNNER_TEMP/observable-library-venv"
+          timed "Check: create clean environment" prepare_clean_environment
+          timed "Dependency install (wheel)" install_wheel
+
+          cd "$RUN_DIR"
+          source "$VENV_DIR/bin/activate"
+          timed "Check: outside-checkout import" python -c 'import os; from pathlib import Path; import observable_library; package_file = Path(observable_library.__file__).resolve(); checkout = Path(os.environ["GITHUB_WORKSPACE"]).resolve(); print(package_file); assert checkout not in package_file.parents'
+          timed "Check: downstream mypy" python -m mypy --python-version 3.12 tests/fixtures/downstream_typing.py
+          timed "Check: all examples" run_examples
+          timed "Check: default pytest" python -m pytest tests -q
+          extended_status=0
+          extended_start=$(date +%s)
+          timed "Check: performance and trajectory" python -m pytest tests/performance -q -s || extended_status=$?
+          timed "Check: integration" python -m pytest tests/integration -q || extended_status=$?
+          extended_total=$(( $(date +%s) - extended_start ))
+          line="Extended check total: ${extended_total}s (limit 300s)"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+          line="The 240s release timeout is stricter and may terminate before the 300s extended-check budget."
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+          (( extended_total <= 300 )) || extended_status=1
+          timed "Check: install sdist without dependencies" install_sdist || extended_status=$?
+          timed "Check: sdist smoke import" python -c 'import observable_library as ol; print(ol.__version__)' || extended_status=$?
+          timed "Check: sdist pip check" python -m pip check || extended_status=$?
+          exit "$extended_status"
+      - name: Record release timing
+        if: always()
+        run: |
+          elapsed=$(( $(date +%s) - JOB_START ))
+          line="Release end-to-end: ${elapsed}s"
+          echo "$line"
+          echo "- $line" >> "$GITHUB_STEP_SUMMARY"
+
+  critical-path-monitor:
+    name: Critical path monitor
+    needs: [quality, current-tests, minimum-tests, advisory-tests, release]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    continue-on-error: true
+    permissions:
+      actions: read
+    steps:
+      - name: Compare with previous completed run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          if ! [[ "${GITHUB_RUN_ATTEMPT:-1}" == "1" ]]; then
+            echo "- Critical path monitor skipped: rerun attempts are not independent workflow runs." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          limit=480
+          warn() {
+            echo "::warning title=Critical path monitor skipped::$1"
+            echo "- Critical path monitor skipped: $1" >> "$GITHUB_STEP_SUMMARY"
+          }
+          get_duration() {
+            run_id="$1"
+            created_at=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.created_at // empty') || return 1
+            completed_at=$(gh api -X GET "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs" -F "per_page=100" --jq '[.jobs[] | select(.name != "Critical path monitor" and .completed_at != null) | .completed_at] | max // empty') || return 1
+            [[ -n "$created_at" && -n "$completed_at" ]] || return 1
+            start=$(date -d "$created_at" +%s) || return 1
+            end=$(date -d "$completed_at" +%s) || return 1
+            (( end >= start )) || return 1
+            echo $(( end - start ))
+          }
+
+          current_json=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID") || { warn "current run API failed"; exit 0; }
+          workflow_id=$(jq -r '.workflow_id // empty' <<< "$current_json")
+          branch=$(jq -r '.head_branch // empty' <<< "$current_json")
+          current_created_at=$(jq -r '.created_at // empty' <<< "$current_json")
+          [[ -n "$workflow_id" && -n "$branch" && -n "$current_created_at" ]] || { warn "current run metadata is missing"; exit 0; }
+          previous_id=$(gh api -X GET "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow_id/runs" \
+            -f "branch=$branch" -f "status=completed" \
+            -f "created=<${current_created_at}" -F "per_page=100" \
+            --jq '.workflow_runs | max_by(.created_at).id // empty') || { warn "previous run API failed"; exit 0; }
+          [[ -n "$previous_id" ]] || { warn "no previous completed run"; exit 0; }
+          current_duration=$(get_duration "$GITHUB_RUN_ID") || { warn "current duration is unavailable"; exit 0; }
+          previous_duration=$(get_duration "$previous_id") || { warn "previous duration is unavailable"; exit 0; }
+
+          echo "- Current critical path: ${current_duration}s (limit ${limit}s)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Previous critical path: ${previous_duration}s" >> "$GITHUB_STEP_SUMMARY"
+          if (( current_duration > limit )); then
+            echo "::warning title=Critical path over target::Current run took ${current_duration}s; limit is ${limit}s"
+            if (( previous_duration > limit )); then
+              echo "::warning title=Critical path review required::Current and previous runs both exceeded ${limit}s"
+            fi
+          fi
+          exit 0
