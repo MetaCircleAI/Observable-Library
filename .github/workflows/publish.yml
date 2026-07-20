@@ -70,9 +70,113 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
-  publish:
-    name: Publish reviewed distributions
+  publish-testpypi:
+    name: Publish reviewed distributions to TestPyPI
     needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-dists
+          path: dist
+      - name: Verify artifact hashes
+        env:
+          EXPECTED_WHEEL_SHA256: ${{ needs.build.outputs.wheel_sha256 }}
+          EXPECTED_SDIST_SHA256: ${{ needs.build.outputs.sdist_sha256 }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          sdists=(dist/*.tar.gz)
+          (( ${#wheels[@]} == 1 ))
+          (( ${#sdists[@]} == 1 ))
+          test "$(sha256sum "${wheels[0]}" | awk '{print $1}')" = "$EXPECTED_WHEEL_SHA256"
+          test "$(sha256sum "${sdists[0]}" | awk '{print $1}')" = "$EXPECTED_SDIST_SHA256"
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          repository-url: https://test.pypi.org/legacy/
+
+  verify-testpypi:
+    name: Verify TestPyPI install
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install from TestPyPI and run Runtime smoke
+        env:
+          PIP_CONFIG_FILE: /dev/null
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_EXTRA_INDEX_URL: ""
+          PIP_KEYRING_PROVIDER: disabled
+          PIP_NO_INPUT: "1"
+        run: |
+          set -euo pipefail
+          VENV_DIR="$RUNNER_TEMP/observable-library-testpypi-verify"
+          RUN_DIR="$RUNNER_TEMP/observable-library-testpypi-runtime-smoke"
+          python -m venv "$VENV_DIR"
+          mkdir -p "$RUN_DIR"
+          cd "$RUN_DIR"
+          "$VENV_DIR/bin/python" -m pip install --no-cache-dir --index-url https://pypi.org/simple "numpy>=1.24" "torch>=2.4.1"
+
+          installed=false
+          for attempt in 1 2 3 4 5; do
+            if "$VENV_DIR/bin/python" -m pip install --no-cache-dir --no-deps --index-url https://test.pypi.org/simple "observable-library==0.1.0"; then
+              installed=true
+              break
+            fi
+            "$VENV_DIR/bin/python" -m pip uninstall -y observable-library || true
+            if [[ "$attempt" == "5" ]]; then
+              exit 1
+            fi
+            sleep 20
+          done
+          test "$installed" = true
+
+          "$VENV_DIR/bin/python" -m pip check
+          "$VENV_DIR/bin/python" - <<'PY'
+          import os
+          from pathlib import Path
+
+          import torch
+          import observable_library as ol
+
+          package_file = Path(ol.__file__).resolve()
+          checkout = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          assert checkout not in package_file.parents
+
+          model = torch.nn.Sequential(torch.nn.Linear(2, 1, bias=False))
+          source = ol.HookSource(model)
+          observable = ol.Observable(
+              spec=ol.ObservableSpec(
+                  source="grad.0.weight",
+                  selector="all",
+                  reduction="l2_norm",
+              ),
+              compute=lambda tensors, _context: tensors["grad.0.weight"].norm(),
+          )
+          runtime = ol.Runtime([observable], source=source)
+
+          source.attach()
+          loss = model(torch.tensor([[2.0, 3.0]])).sum()
+          loss.backward()
+          values = runtime.observe(step=0)
+          source.detach()
+
+          assert values[observable.spec.id].item() > 0
+          print(package_file)
+          PY
+
+  publish-production:
+    name: Publish reviewed distributions to PyPI
+    needs: [build, verify-testpypi]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: pypi-production
@@ -102,7 +206,7 @@ jobs:
 
   verify-production:
     name: Verify production install
-    needs: publish
+    needs: publish-production
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -113,6 +217,7 @@ jobs:
         env:
           PIP_CONFIG_FILE: /dev/null
           PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          PIP_EXTRA_INDEX_URL: ""
           PIP_KEYRING_PROVIDER: disabled
           PIP_NO_INPUT: "1"
         run: |
