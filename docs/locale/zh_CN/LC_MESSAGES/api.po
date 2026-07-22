@@ -1,0 +1,169 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/api.md:2
+msgid "API Reference"
+msgstr "API 参考"
+
+#: ../../../docs/api.md:4
+msgid "The names below are available from the top-level `observable_library` 0.1.0 package."
+msgstr "以下名称可从顶层 `observable_library` 0.1.0 包导入。"
+
+#: ../../../docs/api.md:6
+msgid "Core Types"
+msgstr "核心类型"
+
+#: ../../../docs/api.md:8
+msgid "`ObservableSpec(source, selector, transforms=[], reduction=\"\", temporal=None, frequency=1, budget_hint={})` describes one observable. Its stable `id` includes non-default temporal and scheduling fields."
+msgstr "`ObservableSpec(source, selector, transforms=[], reduction=\"\", temporal=None, frequency=1, budget_hint={})` 描述一个可观测量。其稳定 `id` 包含非默认 temporal 和调度字段。"
+
+#: ../../../docs/api.md:12
+msgid "`Observable(spec, compute, tags=set())` pairs a spec with a callable that accepts the source tensor mapping and runtime context. Manual `Observable` construction is an advanced API; `Pack(observables)` is the stable iterable container passed to execution APIs."
+msgstr "`Observable(spec, compute, tags=set())` 将 spec 与接受 source 张量映射和 runtime context 的 callable 组合起来。手工构造 `Observable` 属于高级 API；`Pack(observables)` 是传给执行 API 的稳定可迭代容器。"
+
+#: ../../../docs/api.md:17
+msgid "`TypedTensor(value, axes, stage=\"\", provenance={})` carries a tensor with axis, stage, and provenance metadata. `__version__` reports the installed package version."
+msgstr "`TypedTensor(value, axes, stage=\"\", provenance={})` 携带张量以及 axis、stage 和 provenance 元数据。`__version__` 返回已安装包版本。"
+
+#: ../../../docs/api.md:21
+msgid "Generation And Registry"
+msgstr "生成与 Registry"
+
+#: ../../../docs/api.md:23
+msgid "`generate` is the canonical API for normal instrumentation. `generate(model, reductions=..., transforms=...)` inspects model parameters and returns a list of observables. The default uses all 13 registered reductions: `sum`, `mean`, `l1_norm`, `l2_norm`, `max`, `min`, `std`, `variance`, `abs_mean`, `nonzero_count`, `positive_fraction`, `negative_fraction`, and `numel`."
+msgstr "`generate` 是常规 instrumentation 的规范 API。`generate(model, reductions=..., transforms=...)` 检查模型参数并返回可观测量列表。默认使用全部 13 个已注册 reduction：`sum`、`mean`、`l1_norm`、`l2_norm`、`max`、`min`、`std`、`variance`、`abs_mean`、`nonzero_count`、`positive_fraction`、`negative_fraction` 和 `numel`。"
+
+#: ../../../docs/api.md:30
+msgid "M2 scans every `model.named_parameters()` entry. It has no public source allowlist and does not generate activation, gradient, or loss observables. Filter the returned list for a smaller Runtime pack, or use the advanced manual `Observable` API for another source. See the practical usage guide for examples."
+msgstr "M2 扫描每个 `model.named_parameters()` 条目。它没有公共 source allowlist，也不生成 activation、gradient 或 loss 可观测量。过滤返回列表可得到更小的 Runtime pack；其他 source 请使用高级手工 `Observable` API。示例见操作指南。"
+
+#: ../../../docs/api.md:35
+msgid "Transforms execute in the supplied order before the reduction. Thus `transforms=[\"a\", \"b\"]` means `b(a(tensor))`; no subsets or permutations are generated. Registered names are resolved during generation. Tensor rank, shape, dtype, and device compatibility remain the transform author's responsibility and are checked only by the actual operation at runtime."
+msgstr "Transform 按给定顺序在 reduction 前执行。因此 `transforms=[\"a\", \"b\"]` 表示 `b(a(tensor))`；不会生成子集或排列。注册名称在生成期间解析。张量 rank、shape、dtype 和 device 兼容性仍由 transform 作者负责，只在运行时由实际操作检查。"
+
+#: ../../../docs/api.md:41
+msgid "`register_transform(name)` and `register_reduction(name)` are decorators for callable extensions. `get_transform(name)` and `get_reduction(name)` retrieve registered callables."
+msgstr "`register_transform(name)` 和 `register_reduction(name)` 是 callable 扩展装饰器。`get_transform(name)` 和 `get_reduction(name)` 获取已注册 callable。"
+
+#: ../../../docs/api.md:45
+msgid "Tensor Sources"
+msgstr "张量 Sources"
+
+#: ../../../docs/api.md:47
+msgid "`TensorSource` is the protocol `get(source_id, step) -> TypedTensor`."
+msgstr "`TensorSource` 是 protocol `get(source_id, step) -> TypedTensor`。"
+
+#: ../../../docs/api.md:49
+msgid "`HookSource(model)` supplies online parameters, activations, gradients, and recorded losses. Call `attach()` before the training work and `detach()` when finished. `FileSource(path)` reads tensors by key from an NPZ file. `CheckpointSource(path)` reads `param.*` sources from a Torch state dict."
+msgstr "`HookSource(model)` 提供在线参数、activation、gradient 和已记录 loss。训练工作前调用 `attach()`，结束后调用 `detach()`。`FileSource(path)` 按 key 从 NPZ 文件读取张量。`CheckpointSource(path)` 从 Torch state dict 读取 `param.*` source。"
+
+#: ../../../docs/api.md:54
+msgid "Parameter reads are lazy and do not require `attach()`. Current hook attachment is broad: all top-level child activations and all trainable parameter gradients are captured. HookSource retains the latest captured value without per-step freshness validation, so run the corresponding forward/backward before each observation. Record a loss explicitly with `record_loss(loss, step)`."
+msgstr "参数读取是惰性的，不需要 `attach()`。当前 hook attachment 范围较广：会捕获所有顶层子模块 activation 和所有可训练参数 gradient。HookSource 保留最近捕获的值，不验证每个 step 的新鲜度，因此每次观测前都要运行对应的 forward/backward。使用 `record_loss(loss, step)` 显式记录 loss。"
+
+#: ../../../docs/api.md:60
+msgid "M2 supports only `selector='all'`. When Runtime reads a `TypedTensor`, it passes the complete object in compute context as `typed_tensor` and forwards its `axes`, `stage`, and `provenance` to `ValueSink` metadata."
+msgstr "M2 只支持 `selector='all'`。Runtime 读取 `TypedTensor` 时，会在 compute context 中以 `typed_tensor` 传入完整对象，并将其 `axes`、`stage` 和 `provenance` 转发到 `ValueSink` 元数据。"
+
+#: ../../../docs/api.md:64
+msgid "Execution And Budget"
+msgstr "执行与 Budget"
+
+#: ../../../docs/api.md:66
+msgid "`Runtime(observables, tensors=None, source=None, budget=None, sink=None)` computes each eligible observable when `observe(step, **context)` is called. Pass either a tensor mapping or a `TensorSource`; a configured `ValueSink` receives each value, and the same values are returned as a dictionary."
+msgstr "调用 `observe(step, **context)` 时，`Runtime(observables, tensors=None, source=None, budget=None, sink=None)` 计算每个符合条件的可观测量。传入张量映射或 `TensorSource`；配置的 `ValueSink` 会收到每个值，同一组值也以字典返回。"
+
+#: ../../../docs/api.md:71
+msgid "Generated and hand-written observables can be placed in the same list or `Pack`. Runtime materializes the iterable and rejects duplicate spec ids. Within one observation it caches each source id, so multiple reductions share one source lookup."
+msgstr "生成和手写可观测量可以放入同一列表或 `Pack`。Runtime 将可迭代对象物化，并拒绝重复 spec id。一次观测内会缓存每个 source id，使多个 reduction 共享一次 source lookup。"
+
+#: ../../../docs/api.md:76
+msgid "`Budget(max_compute_ms=None)` limits the sum of estimated observable cost per `observe()` call. Scheduling uses these `ObservableSpec` fields:"
+msgstr "`Budget(max_compute_ms=None)` 限制每次 `observe()` 调用的可观测量估算成本总和。调度使用以下 `ObservableSpec` 字段："
+
+#: ../../../docs/api.md:79
+msgid "`frequency` must be positive. A spec runs only when `step % frequency == 0`; the default is every step."
+msgstr "`frequency` 必须为正。只有 `step % frequency == 0` 时 spec 才运行；默认每个 step 都运行。"
+
+#: ../../../docs/api.md:81
+msgid "`budget_hint` may contain a `compute_ms` estimate. The estimate must be finite and non-negative; a missing hint counts as zero."
+msgstr "`budget_hint` 可以包含 `compute_ms` 估算。估算值必须有限且非负；缺失 hint 按零计算。"
+
+#: ../../../docs/api.md:83
+msgid "`max_compute_ms` must be finite and non-negative when set. An observable is skipped when its estimate would exceed the remaining budget. The scheduler does not measure execution time or change a spec's frequency."
+msgstr "设置 `max_compute_ms` 时，其值必须有限且非负。当可观测量估算值超过剩余 budget 时会被跳过。调度器不测量执行时间，也不改变 spec 的 frequency。"
+
+#: ../../../docs/api.md:86
+msgid "`generate()` gives generated observables a small positive shape-aware `heuristic`, with a conservative `0.01` ms floor. It is scheduling input only; custom observables should provide explicit `budget_hint` values when a budget matters. M2 makes no `M3` cost-accuracy claim."
+msgstr "`generate()` 为生成的可观测量提供小的正数 shape-aware `heuristic`，保守下限为 `0.01` ms。它只用于调度输入；budget 重要时，自定义可观测量应提供显式 `budget_hint`。M2 不作 `M3` 成本准确性声明。"
+
+#: ../../../docs/api.md:91
+msgid "`OfflineAnalyzer(observables, source, budget=None, sink=None)` exposes `analyze(step, **context)` and delegates to the same runtime compute path."
+msgstr "`OfflineAnalyzer(observables, source, budget=None, sink=None)` 公开 `analyze(step, **context)`，并委托给同一条 runtime 计算路径。"
+
+#: ../../../docs/api.md:94
+msgid "Temporal Operators"
+msgstr "Temporal 运算符"
+
+#: ../../../docs/api.md:96
+msgid "The temporal functions operate on explicit numeric histories:"
+msgstr "Temporal 函数对显式数值历史运行："
+
+#: ../../../docs/api.md:98
+msgid "`delta(values, lag=1)` returns the latest value minus the value at `lag`."
+msgstr "`delta(values, lag=1)` 返回最新值减去 `lag` 位置的值。"
+
+#: ../../../docs/api.md:99
+msgid "`ema(values, alpha)` returns the exponential moving average for `0 < alpha <= 1`."
+msgstr "`ema(values, alpha)` 返回 `0 < alpha <= 1` 时的指数移动平均。"
+
+#: ../../../docs/api.md:101
+msgid "`slope(values)` returns the least-squares slope over equally spaced samples."
+msgstr "`slope(values)` 返回等间隔样本上的最小二乘斜率。"
+
+#: ../../../docs/api.md:102
+msgid "`rolling_std(values, window)` returns the population standard deviation of the latest window."
+msgstr "`rolling_std(values, window)` 返回最近窗口的总体标准差。"
+
+#: ../../../docs/api.md:105
+msgid "The `temporal` field on `ObservableSpec` is metadata included in its id. M2's `Runtime` does not apply a temporal function automatically."
+msgstr "`ObservableSpec` 上的 `temporal` 字段是包含在 id 中的元数据。M2 的 `Runtime` 不会自动应用 temporal 函数。"
+
+#: ../../../docs/api.md:108
+msgid "Storage And Query"
+msgstr "存储与查询"
+
+#: ../../../docs/api.md:110
+msgid "`ValueSink` is the callable protocol `(observable_id, step, value, meta) -> None`. `LocalStorage(root)` is an optional implementation using SQLite metadata and NumPy NPZ array payloads. `query(storage, observable_id, step)` performs the supported id/step readback. It is not a general analysis query engine."
+msgstr "`ValueSink` 是 callable protocol `(observable_id, step, value, meta) -> None`。`LocalStorage(root)` 是使用 SQLite 元数据和 NumPy NPZ 数组 payload 的可选实现。`query(storage, observable_id, step)` 执行受支持的 id/step 读回；它不是通用分析查询引擎。"
+
+#: ../../../docs/api.md:116
+msgid "Observable has no separate display-name field. `ObservableSpec.id` is the 16-character storage and result key derived from the complete spec. Applications may derive a readable label from source, transforms, and reduction, but M2 does not query by that label."
+msgstr "Observable 没有单独的 display-name 字段。`ObservableSpec.id` 是从完整 spec 派生的 16 字符存储和结果键。应用可以从 source、transforms 和 reduction 派生可读标签，但 M2 不按该标签查询。"
+
+#: ../../../docs/api.md:121
+msgid "Filter Foundation"
+msgstr "Filter 基础"
+
+#: ../../../docs/api.md:123
+msgid "Subclass `Filter` and implement `apply(observables)`. A filter is also callable. Compose filters with `&` for intersection and `|` for stable union. M3 owns template filters and their generation pipeline. M2 includes no built-in `BySource` or `ByReduction` filters; user filters operate on an already-generated observable list."
+msgstr "继承 `Filter` 并实现 `apply(observables)`。Filter 本身也可调用。用 `&` 组合取交集，用 `|` 组合取稳定并集。Template filter 及其生成 pipeline 属于 M3。M2 不包含内置 `BySource` 或 `ByReduction` filter；用户 filter 作用于已经生成的可观测量列表。"
+
+#: ../../../docs/api.md:129
+msgid "For executable patterns and current limitations, read [`usage.md`](usage.md)."
+msgstr "可执行模式和当前限制见[`usage.md`](usage.md)。"

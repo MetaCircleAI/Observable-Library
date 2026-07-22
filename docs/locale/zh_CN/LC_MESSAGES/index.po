@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/index.md:7
+msgid "Generate and compute training observables without changing your training loop."
+msgstr "生成并计算训练可观测量，无需改写训练循环。"
+
+#: ../../../docs/index.md:16
+msgid "**PyTorch training observables · 0.1.0**"
+msgstr "**PyTorch 训练可观测量 · 0.1.0**"
+
+#: ../../../docs/index.md:18
+msgid "Observable Library is a small Python package for defining, generating, and computing observables from a running PyTorch training loop. Return values directly or store them for exact id-and-step readback."
+msgstr "Observable Library 是一个小型 Python 包，用于在运行中的 PyTorch 训练循环里定义、生成和计算可观测量。你可以直接使用返回值，也可以存储后按精确 id 和 step 读回。"
+
+#: ../../../docs/index.md:20
+msgid "{ref}`Get started <quickstart>` · {ref}`API reference <api-reference>`"
+msgstr "{ref}`快速开始 <quickstart>` · {ref}`API 参考 <api-reference>`"
+
+#: ../../../docs/index.md:26
+msgid ""
+"import observable_library as ol\n"
+"\n"
+"# 由你选择可观测量；不会自动推断。\n"
+"observables = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"runtime = ol.Runtime(observables, source=ol.HookSource(model))\n"
+"\n"
+"if step % 100 == 0:\n"
+"    values = runtime.observe(step=step)"
+msgstr ""
+"import observable_library as ol\n"
+"\n"
+"# You choose the observables. Nothing is inferred automatically.\n"
+"observables = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"runtime = ol.Runtime(observables, source=ol.HookSource(model))\n"
+"\n"
+"if step % 100 == 0:\n"
+"    values = runtime.observe(step=step)"
+
+#: ../../../docs/index.md:39
+msgid "`param_norm` · illustrative"
+msgstr "`param_norm` · 示意数据"
+
+#: ../../../docs/index.md:40
+msgid "`observed_values` · illustrative"
+msgstr "`observed_values` · 示意数据"
+
+#: ../../../docs/index.md:45
+msgid "`generate` observables → `Runtime.observe()` values → optional `ValueSink` storage"
+msgstr "`generate` 可观测量 → `Runtime.observe()` 计算值 → 可选 `ValueSink` 存储"
+
+#: ../../../docs/index.md:48
+msgid "Install"
+msgstr "安装"
+
+#: ../../../docs/index.md:50
+msgid "Requires Python 3.10–3.12 and `torch>=2.4.1`. The package is published on PyPI under Apache-2.0."
+msgstr "需要 Python 3.10–3.12 和 `torch>=2.4.1`。本包已在 PyPI 发布，采用 Apache-2.0 许可证。"
+
+#: ../../../docs/index.md:52
+msgid "python -m pip install observable-library\n"
+msgstr "python -m pip install observable-library\n"
+
+#: ../../../docs/index.md:56
+msgid "Core data flow"
+msgstr "核心数据流"
+
+#: ../../../docs/index.md:58
+msgid "You explicitly select the reductions and the steps at which computation happens. Parameter generation does not change the training loop and does not automatically create activation, gradient, or loss observables."
+msgstr "你需要显式选择 reduction 和执行计算的 step。参数可观测量生成不会改变训练循环，也不会自动创建 activation、gradient 或 loss 可观测量。"
+
+#: ../../../docs/index.md:60
+msgid ""
+"observables = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"runtime = ol.Runtime(observables, source=ol.HookSource(model))\n"
+"values = runtime.observe(step=0)\n"
+msgstr ""
+"observables = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"runtime = ol.Runtime(observables, source=ol.HookSource(model))\n"
+"values = runtime.observe(step=0)\n"
+
+#: ../../../docs/index.md:66
+msgid "Where to go next"
+msgstr "接下来读什么"
+
+#: ../../../docs/index.md:71
+msgid "Quickstart"
+msgstr "快速开始"
+
+#: ../../../docs/index.md:75
+msgid "Go from installation to the first observed and stored value with a small CPU example."
+msgstr "通过一个小型 CPU 示例，从安装走到第一个计算并存储的观测值。"
+
+#: ../../../docs/index.md:78
+msgid "Concepts"
+msgstr "核心概念"
+
+#: ../../../docs/index.md:82
+msgid "Understand specs, sources, packs, runtime scheduling, storage, and stable ids."
+msgstr "理解 spec、source、pack、运行时调度、存储和稳定 id。"
+
+#: ../../../docs/index.md:85
+msgid "How-to Guides"
+msgstr "操作指南"
+
+#: ../../../docs/index.md:89
+msgid "Use online hooks, custom observables, filters, transforms, reductions, and offline files."
+msgstr "使用在线 hooks、自定义可观测量、filter、transform、reduction 和离线文件。"
+
+#: ../../../docs/index.md:92
+msgid "API Reference"
+msgstr "API 参考"
+
+#: ../../../docs/index.md:96
+msgid "Browse the complete top-level 0.1.0 public API and its current behavior."
+msgstr "浏览 0.1.0 完整的顶层公共 API 及其当前行为。"

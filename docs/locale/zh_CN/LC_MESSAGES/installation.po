@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/installation.md:2
+msgid "Installation"
+msgstr "安装"
+
+#: ../../../docs/installation.md:4
+msgid "Observable Library 0.1.0 is published on PyPI."
+msgstr "Observable Library 0.1.0 已发布到 PyPI。"
+
+#: ../../../docs/installation.md:6
+msgid "Requirements"
+msgstr "环境要求"
+
+#: ../../../docs/installation.md:8
+msgid "Python 3.10, 3.11, or 3.12"
+msgstr "Python 3.10、3.11 或 3.12"
+
+#: ../../../docs/installation.md:9
+msgid "`numpy>=1.24`"
+msgstr "`numpy>=1.24`"
+
+#: ../../../docs/installation.md:10
+msgid "`torch>=2.4.1`"
+msgstr "`torch>=2.4.1`"
+
+#: ../../../docs/installation.md:12
+msgid "Python 3.13 has an advisory CI lane but is not part of the required support policy for 0.1.0."
+msgstr "Python 3.13 设有 advisory CI 通道，但不属于 0.1.0 的必需支持范围。"
+
+#: ../../../docs/installation.md:14
+msgid "Install from PyPI"
+msgstr "从 PyPI 安装"
+
+#: ../../../docs/installation.md:16
+msgid "python -m pip install observable-library\n"
+msgstr "python -m pip install observable-library\n"
+
+#: ../../../docs/installation.md:20
+msgid "Check the installed version:"
+msgstr "检查已安装版本："
+
+#: ../../../docs/installation.md:22
+msgid "python -c \"import observable_library as ol; print(ol.__version__)\"\n"
+msgstr "python -c \"import observable_library as ol; print(ol.__version__)\"\n"
+
+#: ../../../docs/installation.md:26
+msgid "The expected output is `0.1.0`."
+msgstr "预期输出为 `0.1.0`。"
+
+#: ../../../docs/installation.md:28
+msgid "Install from a checkout"
+msgstr "从代码 checkout 安装"
+
+#: ../../../docs/installation.md:30
+msgid "python -m pip install .\n"
+msgstr "python -m pip install .\n"
+
+#: ../../../docs/installation.md:34
+msgid "For development, install the test, formatting, lint, and typing tools:"
+msgstr "开发时还需安装测试、格式化、lint 和类型检查工具："
+
+#: ../../../docs/installation.md:36
+msgid "python -m pip install -e \".[dev]\"\n"
+msgstr "python -m pip install -e \".[dev]\"\n"
+
+#: ../../../docs/installation.md:40
+msgid "The package and its documentation are licensed under Apache-2.0."
+msgstr "本包及其文档采用 Apache-2.0 许可证。"
+
+#: ../../../docs/installation.md:42
+msgid "Next step"
+msgstr "下一步"
+
+#: ../../../docs/installation.md:44
+msgid "Continue to the {ref}`quickstart` for a complete CPU-only example with no dataset download."
+msgstr "继续阅读{ref}`快速开始 <quickstart>`，运行一个无需下载数据集的完整 CPU 示例。"

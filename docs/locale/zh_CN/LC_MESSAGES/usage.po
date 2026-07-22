@@ -1,0 +1,219 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/usage.md:2
+msgid "How-to Guides"
+msgstr "操作指南"
+
+#: ../../../docs/usage.md:4
+msgid "This guide describes the behavior implemented by Observable Library M2. It is written for package users; future Roadmap capabilities are called out explicitly."
+msgstr "本指南描述 Observable Library M2 已实现的行为，面向包用户编写；未来路线图能力会被明确标出。"
+
+#: ../../../docs/usage.md:7
+msgid "Use these recipes after completing the {ref}`quickstart`. Every example stays inside the 0.1.0 public boundary."
+msgstr "完成{ref}`快速开始 <quickstart>`后再使用这些示例。每个示例都保持在 0.1.0 公共边界内。"
+
+#: ../../../docs/usage.md:9
+msgid "What `generate()` Produces"
+msgstr "`generate()` 会生成什么"
+
+#: ../../../docs/usage.md:11
+msgid "`generate(model, reductions=..., transforms=...)` scans every entry returned by `model.named_parameters()`. It produces one observable for every parameter and requested reduction. The same ordered transform chain is attached to each one."
+msgstr "`generate(model, reductions=..., transforms=...)` 扫描 `model.named_parameters()` 返回的每个条目，为每个参数和请求的 reduction 生成一个可观测量，并为每个可观测量附加相同的有序 transform 链。"
+
+#: ../../../docs/usage.md:15
+msgid "M2 does not expose a `sources=` argument and does not generate `activation.*`, `grad.*`, or `loss` observables. Filtering the returned list reduces Runtime work, although parameter metadata has already been enumerated:"
+msgstr "M2 不公开 `sources=` 参数，也不生成 `activation.*`、`grad.*` 或 `loss` 可观测量。过滤返回列表可以减少 Runtime 工作，不过参数元数据已经完成枚举："
+
+#: ../../../docs/usage.md:19
+msgid ""
+"generated = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"wanted = {\"param.0.weight\", \"param.2.weight\"}\n"
+"selected = [item for item in generated if item.spec.source in wanted]\n"
+msgstr ""
+"generated = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"wanted = {\"param.0.weight\", \"param.2.weight\"}\n"
+"selected = [item for item in generated if item.spec.source in wanted]\n"
+
+#: ../../../docs/usage.md:25
+msgid "M3 owns generation-stage template filters for parameters, gradients, and activations. Its exact source-selection API is not yet part of the public contract."
+msgstr "参数、gradient 和 activation 的生成阶段 template filter 属于 M3；其精确的 source 选择 API 尚未成为公共契约。"
+
+#: ../../../docs/usage.md:29
+msgid "Transform Order And Validation"
+msgstr "Transform 顺序与验证"
+
+#: ../../../docs/usage.md:31
+msgid "Transforms run from left to right. For example, `transforms=[\"center\", \"normalize\"]` executes:"
+msgstr "Transform 从左到右运行。例如，`transforms=[\"center\", \"normalize\"]` 执行："
+
+#: ../../../docs/usage.md:34
+msgid "normalize(center(tensor)) -> reduction\n"
+msgstr "normalize(center(tensor)) -> reduction\n"
+
+#: ../../../docs/usage.md:38
+msgid "No subsets, reverse order, or permutations are generated. Every transform must be registered before `generate()` is called, and duplicate names are rejected. The registry validates names, not tensor contracts: incompatible rank, shape, dtype, or device assumptions fail when the observable runs."
+msgstr "系统不会生成子集、反向顺序或排列。每个 transform 必须在调用 `generate()` 前注册，重复名称会被拒绝。Registry 验证名称而非张量契约；不兼容的 rank、shape、dtype 或 device 假设会在可观测量运行时失败。"
+
+#: ../../../docs/usage.md:43
+msgid "Generated observables capture the resolved transform and reduction callables. Later registry changes therefore cannot silently change an existing observable's computation."
+msgstr "生成的可观测量会捕获已解析的 transform 和 reduction callable，因此后续 registry 变更不能静默改变已有可观测量的计算。"
+
+#: ../../../docs/usage.md:47
+msgid "Online Source Lifetime"
+msgstr "在线 source 生命周期"
+
+#: ../../../docs/usage.md:49
+msgid "`HookSource.get(\"param.*\", step)` reads the current model parameter directly. Parameter-only generated observables do not need hooks, so `attach()` is optional for that case."
+msgstr "`HookSource.get(\"param.*\", step)` 直接读取当前模型参数。仅含参数的生成可观测量不需要 hooks，因此这种情况下 `attach()` 是可选的。"
+
+#: ../../../docs/usage.md:53
+msgid "`activation.*` and `grad.*` values are produced during forward and backward. Call `source.attach()` before that work and `source.detach()` when finished. Observe gradients after `loss.backward()` and before `optimizer.step()`."
+msgstr "`activation.*` 和 `grad.*` 值在 forward 和 backward 期间产生。请在这些操作前调用 `source.attach()`，完成后调用 `source.detach()`。应在 `loss.backward()` 之后、`optimizer.step()` 之前观测 gradients。"
+
+#: ../../../docs/usage.md:57
+msgid "Current `attach()` behavior is broad: it installs activation hooks on all top-level children and gradient hooks on all trainable parameters. It stores the latest captured tensor and does not track freshness per step. Run the matching forward/backward before every `observe()` call; otherwise a previous value may remain cached. Activation ids use `activation.<top-level-child-name>` and gradient ids use `grad.<parameter-name>`."
+msgstr "当前 `attach()` 行为范围较广：它在所有顶层子模块上安装 activation hooks，在所有可训练参数上安装 gradient hooks。它存储最近捕获的张量，不跟踪每个 step 的新鲜度。每次调用 `observe()` 前都要运行匹配的 forward/backward，否则旧值可能仍在缓存中。Activation id 使用 `activation.<top-level-child-name>`，gradient id 使用 `grad.<parameter-name>`。"
+
+#: ../../../docs/usage.md:64
+msgid "Loss is not discovered automatically. To use a `source=\"loss\"` observable, call `source.record_loss(loss, step)` first."
+msgstr "Loss 不会被自动发现。要使用 `source=\"loss\"` 可观测量，请先调用 `source.record_loss(loss, step)`。"
+
+#: ../../../docs/usage.md:67
+msgid "Within one `observe()` call, Runtime caches each requested source, so several reductions over the same tensor perform one source lookup."
+msgstr "一次 `observe()` 调用内，Runtime 会缓存每个请求的 source，因此同一张量上的多个 reduction 只执行一次 source lookup。"
+
+#: ../../../docs/usage.md:70
+msgid "Mix Generated And Custom Observables"
+msgstr "混合生成与自定义可观测量"
+
+#: ../../../docs/usage.md:72
+msgid "`generate()` returns `list[Observable]`. Add advanced custom observables before constructing a `Pack`:"
+msgstr "`generate()` 返回 `list[Observable]`。构造 `Pack` 前可以加入高级自定义可观测量："
+
+#: ../../../docs/usage.md:75
+msgid ""
+"generated = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"gradient_spec = ol.ObservableSpec(\n"
+"    source=\"grad.0.weight\",\n"
+"    selector=\"all\",\n"
+"    reduction=\"l2_norm\",\n"
+"    budget_hint={\"compute_ms\": 0.01},\n"
+")\n"
+"gradient = ol.Observable(\n"
+"    spec=gradient_spec,\n"
+"    compute=lambda tensors, _context: tensors[gradient_spec.source].norm(),\n"
+")\n"
+"runtime = ol.Runtime(ol.Pack([*generated, gradient]), source=source)\n"
+msgstr ""
+"generated = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"gradient_spec = ol.ObservableSpec(\n"
+"    source=\"grad.0.weight\",\n"
+"    selector=\"all\",\n"
+"    reduction=\"l2_norm\",\n"
+"    budget_hint={\"compute_ms\": 0.01},\n"
+")\n"
+"gradient = ol.Observable(\n"
+"    spec=gradient_spec,\n"
+"    compute=lambda tensors, _context: tensors[gradient_spec.source].norm(),\n"
+")\n"
+"runtime = ol.Runtime(ol.Pack([*generated, gradient]), source=source)\n"
+
+#: ../../../docs/usage.md:90
+msgid "Runtime requires every observable id to be unique. A custom observable whose spec is identical to a generated one is rejected. When a `Budget` is active, custom observables should provide a realistic `budget_hint`; a missing estimate counts as zero."
+msgstr "Runtime 要求每个可观测量 id 唯一。Spec 与生成项相同的自定义可观测量会被拒绝。启用 `Budget` 时，自定义可观测量应提供现实的 `budget_hint`；缺失估算按零计算。"
+
+#: ../../../docs/usage.md:95
+msgid "User-Defined Filters"
+msgstr "用户自定义 Filters"
+
+#: ../../../docs/usage.md:97
+msgid "M2 provides the `Filter` base class and `&` / `|` composition, but no built-in `BySource` or `ByReduction` filters. A user-defined filter acts after generation:"
+msgstr "M2 提供 `Filter` 基类以及 `&` / `|` 组合，但没有内置 `BySource` 或 `ByReduction` filter。用户自定义 filter 在生成后生效："
+
+#: ../../../docs/usage.md:100
+msgid ""
+"class ByReduction(ol.Filter):\n"
+"    def __init__(self, name: str) -> None:\n"
+"        self.name = name\n"
+"\n"
+"    def apply(self, observables):\n"
+"        return [\n"
+"            item for item in observables if item.spec.reduction == self.name\n"
+"        ]\n"
+"\n"
+"keep = ByReduction(\"l2_norm\") | ByReduction(\"mean\")\n"
+"selected = keep(observables)\n"
+msgstr ""
+"class ByReduction(ol.Filter):\n"
+"    def __init__(self, name: str) -> None:\n"
+"        self.name = name\n"
+"\n"
+"    def apply(self, observables):\n"
+"        return [\n"
+"            item for item in observables if item.spec.reduction == self.name\n"
+"        ]\n"
+"\n"
+"keep = ByReduction(\"l2_norm\") | ByReduction(\"mean\")\n"
+"selected = keep(observables)\n"
+
+#: ../../../docs/usage.md:114
+msgid "This prevents unselected observables from running, but does not prevent their initial generation. M3 plans true generation-stage template filters."
+msgstr "这会阻止未选中的可观测量运行，但不会阻止它们最初被生成。真正的生成阶段 template filter 计划属于 M3。"
+
+#: ../../../docs/usage.md:117
+msgid "Identity, Results, And Query"
+msgstr "Identity、结果与查询"
+
+#: ../../../docs/usage.md:119
+msgid "There is no separate user-facing name field. `observable.spec.id` is a deterministic 16-character hash derived from the complete spec, including its source, selector, ordered transforms, reduction, temporal settings, frequency, and budget hint. Changing any identity field can change the id."
+msgstr "系统没有单独的用户可见 name 字段。`observable.spec.id` 是从完整 spec 确定性派生的 16 字符哈希，覆盖 source、selector、有序 transforms、reduction、temporal 设置、frequency 和 budget hint。修改任何 identity 字段都可能改变 id。"
+
+#: ../../../docs/usage.md:124
+msgid "`Runtime.observe()` returns `dict[observable_id, value]`. `LocalStorage` stores metadata in SQLite and array payloads in NumPy NPZ files; it and `query()` use the same exact id and step:"
+msgstr "`Runtime.observe()` 返回 `dict[observable_id, value]`。`LocalStorage` 在 SQLite 中存储元数据，在 NumPy NPZ 文件中存储数组 payload；它与 `query()` 使用相同的精确 id 和 step："
+
+#: ../../../docs/usage.md:128
+msgid ""
+"observable = observables[0]\n"
+"values = runtime.observe(step=7)\n"
+"value = values[observable.spec.id]\n"
+"stored = ol.query(storage, observable.spec.id, step=7)\n"
+msgstr ""
+"observable = observables[0]\n"
+"values = runtime.observe(step=7)\n"
+"value = values[observable.spec.id]\n"
+"stored = ol.query(storage, observable.spec.id, step=7)\n"
+
+#: ../../../docs/usage.md:135
+msgid "For logs or user interfaces, derive a display label without treating it as the storage key:"
+msgstr "用于日志或用户界面时，可以派生显示标签，但不要把它当作存储键："
+
+#: ../../../docs/usage.md:138
+msgid ""
+"spec = observable.spec\n"
+"chain = \" -> \".join((*spec.transforms, spec.reduction))\n"
+"label = f\"{spec.source} | {chain}\"\n"
+msgstr ""
+"spec = observable.spec\n"
+"chain = \" -> \".join((*spec.transforms, spec.reduction))\n"
+"label = f\"{spec.source} | {chain}\"\n"
+
+#: ../../../docs/usage.md:144
+msgid "M2 supports exact id/step readback only. Query by source, reduction, tag, or display label belongs to later analysis tooling."
+msgstr "M2 只支持按精确 id/step 读回。按 source、reduction、tag 或显示标签查询属于后续分析工具。"

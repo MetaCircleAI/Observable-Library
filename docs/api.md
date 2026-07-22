@@ -1,6 +1,7 @@
+(api-reference)=
 # API Reference
 
-The names below are available from the top-level `observable_library` package.
+The names below are available from the top-level `observable_library` 0.1.0 package.
 
 ## Core Types
 
@@ -26,7 +27,7 @@ returns a list of observables. The default uses all 13 registered reductions:
 `abs_mean`, `nonzero_count`, `positive_fraction`, `negative_fraction`, and
 `numel`.
 
-`generate()` scans every `model.named_parameters()` entry. It has no public source
+M2 scans every `model.named_parameters()` entry. It has no public source
 allowlist and does not generate activation, gradient, or loss observables.
 Filter the returned list for a smaller Runtime pack, or use the advanced manual
 `Observable` API for another source. See the practical usage guide for examples.
@@ -56,7 +57,7 @@ are captured. HookSource retains the latest captured value without per-step
 freshness validation, so run the corresponding forward/backward before each
 observation. Record a loss explicitly with `record_loss(loss, step)`.
 
-The public contract supports only `selector='all'`. When Runtime reads a `TypedTensor`, it passes
+M2 supports only `selector='all'`. When Runtime reads a `TypedTensor`, it passes
 the complete object in compute context as `typed_tensor` and forwards its `axes`,
 `stage`, and `provenance` to `ValueSink` metadata.
 
@@ -85,7 +86,7 @@ source lookup.
 - `generate()` gives generated observables a small positive shape-aware
   `heuristic`, with a conservative `0.01` ms floor. It is scheduling input only;
   custom observables should provide explicit `budget_hint` values when a budget
-  matters. The heuristic is not a calibrated cost-accuracy estimate.
+  matters. M2 makes no `M3` cost-accuracy claim.
 
 `OfflineAnalyzer(observables, source, budget=None, sink=None)` exposes
 `analyze(step, **context)` and delegates to the same runtime compute path.
@@ -101,7 +102,7 @@ The temporal functions operate on explicit numeric histories:
 - `rolling_std(values, window)` returns the population standard deviation of
   the latest window.
 
-The `temporal` field on `ObservableSpec` is metadata included in its id. The
+The `temporal` field on `ObservableSpec` is metadata included in its id. M2's
 `Runtime` does not apply a temporal function automatically.
 
 ## Storage And Query
@@ -114,14 +115,14 @@ It is not a general analysis query engine.
 
 Observable has no separate display-name field. `ObservableSpec.id` is the
 16-character storage and result key derived from the complete spec. Applications
-may derive a readable label from source, transforms, and reduction, but the package does
+may derive a readable label from source, transforms, and reduction, but M2 does
 not query by that label.
 
 ## Filter Foundation
 
 Subclass `Filter` and implement `apply(observables)`. A filter is also callable.
-Compose filters with `&` for intersection and `|` for stable union.
-Generation-stage template filters are not implemented. The package includes no built-in
+Compose filters with `&` for intersection and `|` for stable union. M3 owns
+template filters and their generation pipeline. M2 includes no built-in
 `BySource` or `ByReduction` filters; user filters operate on an already-generated
 observable list.
 

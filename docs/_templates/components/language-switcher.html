@@ -1,0 +1,9 @@
+<nav class="docs-language-switch" data-doc-language-switch aria-label="Documentation language">
+  {% if language and language.startswith("zh") %}
+    <a href="{{ content_root }}../{{ pagename }}.html" hreflang="en">EN</a>
+    <span aria-current="page" lang="zh-CN">中文</span>
+  {% else %}
+    <span aria-current="page" lang="en">EN</span>
+    <a href="{{ content_root }}zh/{{ pagename }}.html" hreflang="zh-CN">中文</a>
+  {% endif %}
+</nav>

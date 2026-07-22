@@ -1,0 +1,109 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/concepts.md:2
+msgid "Concepts"
+msgstr "核心概念"
+
+#: ../../../docs/concepts.md:4
+msgid "Observable Library separates **what to compute**, **where tensors come from**, and **when computation runs**."
+msgstr "Observable Library 将**计算什么**、**张量来自哪里**和**何时执行计算**分开处理。"
+
+#: ../../../docs/concepts.md:6
+msgid "Observable specs and identity"
+msgstr "可观测量 spec 与 identity"
+
+#: ../../../docs/concepts.md:8
+msgid "`ObservableSpec` describes a source, selector, ordered transform chain, reduction, temporal metadata, frequency, and budget hint. Its `id` is a stable 16-character hash of the complete spec. Change an identity field and the id can change."
+msgstr "`ObservableSpec` 描述 source、selector、有序 transform 链、reduction、temporal 元数据、frequency 和 budget hint。它的 `id` 是完整 spec 的稳定 16 字符哈希。修改 identity 字段可能改变 id。"
+
+#: ../../../docs/concepts.md:10
+msgid "`Observable` pairs a spec with a compute callable. `Pack` is the stable iterable container accepted by execution APIs and rejects duplicate ids when materialized by Runtime."
+msgstr "`Observable` 把 spec 与 compute callable 组合起来。`Pack` 是执行 API 接受的稳定可迭代容器；Runtime 将其物化时会拒绝重复 id。"
+
+#: ../../../docs/concepts.md:12
+msgid "Generation"
+msgstr "生成"
+
+#: ../../../docs/concepts.md:14
+msgid "`generate(model, reductions=..., transforms=...)` enumerates every `model.named_parameters()` entry. For each parameter and requested reduction it creates one observable."
+msgstr "`generate(model, reductions=..., transforms=...)` 枚举 `model.named_parameters()` 的每个条目，并为每个参数和请求的 reduction 创建一个可观测量。"
+
+#: ../../../docs/concepts.md:16
+msgid "Generation in 0.1.0 does not discover activations, gradients, or loss values. Add those as hand-written observables and supply an appropriate source."
+msgstr "0.1.0 的生成过程不会发现 activation、gradient 或 loss 值。请手写这些可观测量，并提供合适的 source。"
+
+#: ../../../docs/concepts.md:18
+msgid "Transforms run from left to right before the reduction. The registry validates transform and reduction names during generation; tensor compatibility is checked only when the operation executes."
+msgstr "Transform 在 reduction 之前从左到右运行。Registry 在生成时验证 transform 和 reduction 名称；张量兼容性只在操作实际执行时检查。"
+
+#: ../../../docs/concepts.md:20
+msgid "Sources"
+msgstr "数据源"
+
+#: ../../../docs/concepts.md:22
+msgid "All sources implement the `TensorSource` protocol:"
+msgstr "所有 source 都实现 `TensorSource` protocol："
+
+#: ../../../docs/concepts.md:24
+msgid "`HookSource` reads live parameters and captured activations, gradients, and explicitly recorded losses."
+msgstr "`HookSource` 读取实时参数，以及捕获的 activation、gradient 和显式记录的 loss。"
+
+#: ../../../docs/concepts.md:25
+msgid "`FileSource` reads arrays by key from an NPZ file."
+msgstr "`FileSource` 按 key 从 NPZ 文件读取数组。"
+
+#: ../../../docs/concepts.md:26
+msgid "`CheckpointSource` reads `param.*` values from a Torch state dict."
+msgstr "`CheckpointSource` 从 Torch state dict 读取 `param.*` 值。"
+
+#: ../../../docs/concepts.md:28
+msgid "Source values are wrapped in `TypedTensor`, which can carry axes, stage, and provenance metadata."
+msgstr "Source 值封装在 `TypedTensor` 中，可携带 axes、stage 和 provenance 元数据。"
+
+#: ../../../docs/concepts.md:30
+msgid "Runtime and scheduling"
+msgstr "Runtime 与调度"
+
+#: ../../../docs/concepts.md:32
+msgid "`Runtime.observe()` computes every eligible observable for a step and returns a dictionary keyed by spec id. Within one call, Runtime caches each source lookup so multiple reductions can share one tensor read."
+msgstr "`Runtime.observe()` 计算某个 step 上所有符合条件的可观测量，并返回以 spec id 为键的字典。一次调用内，Runtime 会缓存每个 source lookup，使多个 reduction 共享一次张量读取。"
+
+#: ../../../docs/concepts.md:34
+msgid "`frequency` controls step eligibility. `Budget(max_compute_ms=...)` limits the sum of declared `budget_hint[\"compute_ms\"]` estimates. The scheduler does not measure wall-clock execution time or recalibrate estimates."
+msgstr "`frequency` 控制 step 是否符合条件。`Budget(max_compute_ms=...)` 限制已声明的 `budget_hint[\"compute_ms\"]` 估算值总和。调度器不会测量墙钟执行时间，也不会重新校准估算值。"
+
+#: ../../../docs/concepts.md:36
+msgid "`OfflineAnalyzer` delegates to the same runtime path through `analyze(step, **context)`."
+msgstr "`OfflineAnalyzer` 通过 `analyze(step, **context)` 委托给同一条 runtime 路径。"
+
+#: ../../../docs/concepts.md:38
+msgid "Storage"
+msgstr "存储"
+
+#: ../../../docs/concepts.md:40
+msgid "`ValueSink` is the storage contract. `LocalStorage` is one optional implementation using SQLite metadata and NPZ payload files. `query()` supports exact observable id and step readback only; it is not a general analytics query engine."
+msgstr "`ValueSink` 是存储契约。`LocalStorage` 是一个可选实现，使用 SQLite 元数据和 NPZ payload 文件。`query()` 只支持按精确可观测量 id 和 step 读回；它不是通用分析查询引擎。"
+
+#: ../../../docs/concepts.md:42
+msgid "Selection and temporal functions"
+msgstr "选择与 temporal 函数"
+
+#: ../../../docs/concepts.md:44
+msgid "Observable Library 0.1.0 supports only `selector=\"all\"`. The `delta`, `ema`, `slope`, and `rolling_std` functions operate on explicit numeric histories. A spec's `temporal` field contributes to identity but Runtime does not apply a temporal function automatically."
+msgstr "Observable Library 0.1.0 只支持 `selector=\"all\"`。`delta`、`ema`、`slope` 和 `rolling_std` 函数对显式数值历史运行。Spec 的 `temporal` 字段参与 identity，但 Runtime 不会自动应用 temporal 函数。"
