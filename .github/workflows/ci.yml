@@ -99,7 +99,7 @@ jobs:
           check_status=0
           check_start=$(date +%s)
           timed "Check: versions" python -c 'import platform, torch; print(platform.python_version(), torch.__version__)' || check_status=$?
-          timed "Check: default pytest" python -m pytest tests -q --ignore=tests/test_web_docs.py || check_status=$?
+          timed "Check: default pytest" python -m pytest tests -q || check_status=$?
           check_total=$(( $(date +%s) - check_start ))
           line="Check total: ${check_total}s (limit 120s)"
           echo "$line"
@@ -145,7 +145,7 @@ jobs:
           check_status=0
           check_start=$(date +%s)
           timed "Check: minimum Torch" python -c 'import torch; print(torch.__version__); assert torch.__version__.split("+")[0] == "2.4.1"' || check_status=$?
-          timed "Check: default pytest" python -m pytest tests -q --ignore=tests/test_web_docs.py || check_status=$?
+          timed "Check: default pytest" python -m pytest tests -q || check_status=$?
           check_total=$(( $(date +%s) - check_start ))
           line="Check total: ${check_total}s (limit 120s)"
           echo "$line"
@@ -192,7 +192,7 @@ jobs:
           check_status=0
           check_start=$(date +%s)
           timed "Check: versions" python -c 'import platform, torch; print(platform.python_version(), torch.__version__)' || check_status=$?
-          timed "Check: default pytest" python -m pytest tests -q --ignore=tests/test_web_docs.py || check_status=$?
+          timed "Check: default pytest" python -m pytest tests -q || check_status=$?
           check_total=$(( $(date +%s) - check_start ))
           line="Check total: ${check_total}s (limit 120s)"
           echo "$line"
@@ -280,7 +280,7 @@ jobs:
           timed "Check: outside-checkout import" python -c 'import os; from pathlib import Path; import observable_library; package_file = Path(observable_library.__file__).resolve(); checkout = Path(os.environ["GITHUB_WORKSPACE"]).resolve(); print(package_file); assert checkout not in package_file.parents'
           timed "Check: downstream mypy" python -m mypy --python-version 3.12 tests/fixtures/downstream_typing.py
           timed "Check: all examples" run_examples
-          timed "Check: default pytest" python -m pytest tests -q --ignore=tests/test_web_docs.py
+          timed "Check: default pytest" python -m pytest tests -q
           extended_status=0
           extended_start=$(date +%s)
           timed "Check: performance and trajectory" python -m pytest tests/performance -q -s || extended_status=$?

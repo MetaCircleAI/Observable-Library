@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from babel.messages.pofile import read_po
+import pytest
 
 try:
     import tomllib
@@ -10,6 +10,10 @@ except ModuleNotFoundError:
     import tomli as tomllib
 
 from scripts.build_docs import build_site
+
+
+read_po = pytest.importorskip("babel.messages.pofile").read_po
+pytest.importorskip("sphinx")
 
 
 ROOT = Path(__file__).resolve().parents[1]
