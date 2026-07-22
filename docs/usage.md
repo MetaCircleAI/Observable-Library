@@ -1,7 +1,10 @@
-# Practical Usage Guide
+(how-to-guides)=
+# How-to Guides
 
-This guide describes the behavior implemented by the current Observable Library
-package. Future capabilities are called out explicitly.
+This guide describes the behavior implemented by Observable Library M2. It is
+written for package users; future Roadmap capabilities are called out explicitly.
+
+Use these recipes after completing the {ref}`quickstart`. Every example stays inside the 0.1.0 public boundary.
 
 ## What `generate()` Produces
 
@@ -9,7 +12,7 @@ package. Future capabilities are called out explicitly.
 `model.named_parameters()`. It produces one observable for every parameter and
 requested reduction. The same ordered transform chain is attached to each one.
 
-`generate()` does not expose a `sources=` argument and does not generate `activation.*`,
+M2 does not expose a `sources=` argument and does not generate `activation.*`,
 `grad.*`, or `loss` observables. Filtering the returned list reduces Runtime
 work, although parameter metadata has already been enumerated:
 
@@ -19,8 +22,8 @@ wanted = {"param.0.weight", "param.2.weight"}
 selected = [item for item in generated if item.spec.source in wanted]
 ```
 
-Generation-stage template filters for parameters, gradients, and activations
-are not implemented. Their exact source-selection API is not part of the public
+M3 owns generation-stage template filters for parameters, gradients, and
+activations. Its exact source-selection API is not yet part of the public
 contract.
 
 ## Transform Order And Validation
@@ -91,7 +94,7 @@ counts as zero.
 
 ## User-Defined Filters
 
-The package provides the `Filter` base class and `&` / `|` composition, but no built-in
+M2 provides the `Filter` base class and `&` / `|` composition, but no built-in
 `BySource` or `ByReduction` filters. A user-defined filter acts after generation:
 
 ```python
@@ -109,7 +112,7 @@ selected = keep(observables)
 ```
 
 This prevents unselected observables from running, but does not prevent their
-initial generation. True generation-stage template filters are planned.
+initial generation. M3 plans true generation-stage template filters.
 
 ## Identity, Results, And Query
 
@@ -138,5 +141,5 @@ chain = " -> ".join((*spec.transforms, spec.reduction))
 label = f"{spec.source} | {chain}"
 ```
 
-The package supports exact id/step readback only. Query by source, reduction, tag, or
+M2 supports exact id/step readback only. Query by source, reduction, tag, or
 display label belongs to later analysis tooling.

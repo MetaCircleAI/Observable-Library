@@ -1,0 +1,54 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/docs.yml"
+      - "docs/**"
+      - "observable_library/**"
+      - "scripts/build_docs.py"
+      - "tests/test_web_docs.py"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - ".github/workflows/docs.yml"
+      - "docs/**"
+      - "observable_library/**"
+      - "scripts/build_docs.py"
+      - "tests/test_web_docs.py"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+jobs:
+  build:
+    name: Build bilingual documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install documentation dependencies
+        run: python -m pip install -e ".[docs]"
+      - name: Build documentation artifact
+        run: python scripts/build_docs.py --output-dir build/web-docs
+      - name: Run documentation policy tests
+        run: python -m pytest tests/test_web_docs.py -q
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-docs-${{ github.sha }}
+          path: build/web-docs
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

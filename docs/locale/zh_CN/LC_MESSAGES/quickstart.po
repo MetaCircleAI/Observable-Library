@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/quickstart.md:2
+msgid "Quickstart"
+msgstr "快速开始"
+
+#: ../../../docs/quickstart.md:4
+msgid "This example generates parameter-norm observables, runs one training step, computes values after backward, stores them locally, and reads one value back."
+msgstr "本例生成参数范数可观测量，执行一个训练 step，在 backward 后计算数值，将其存到本地，再读回其中一个值。"
+
+#: ../../../docs/quickstart.md:6
+msgid ""
+"import torch\n"
+"import observable_library as ol\n"
+"\n"
+"torch.manual_seed(0)\n"
+"model = torch.nn.Sequential(torch.nn.Linear(2, 1))\n"
+"optimizer = torch.optim.SGD(model.parameters(), lr=0.1)\n"
+"observables = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"\n"
+"source = ol.HookSource(model)\n"
+"source.attach()\n"
+"storage = ol.LocalStorage(\"./run\")\n"
+"runtime = ol.Runtime(\n"
+"    observables=ol.Pack(observables),\n"
+"    source=source,\n"
+"    sink=storage,\n"
+"    budget=ol.Budget(max_compute_ms=10.0),\n"
+")\n"
+"\n"
+"inputs = torch.tensor([[1.0, -1.0], [0.5, 0.25]])\n"
+"targets = torch.tensor([[0.5], [-0.25]])\n"
+"optimizer.zero_grad()\n"
+"predictions = model(inputs)\n"
+"loss = torch.nn.functional.mse_loss(predictions, targets)\n"
+"loss.backward()\n"
+"\n"
+"values = runtime.observe(step=0)\n"
+"assert values\n"
+"observable_id, value = next(iter(values.items()))\n"
+"stored_value = ol.query(storage, observable_id, step=0)\n"
+"assert stored_value == value\n"
+"print(f\"{observable_id}: {stored_value}\")\n"
+"\n"
+"optimizer.step()\n"
+"source.detach()\n"
+msgstr ""
+"import torch\n"
+"import observable_library as ol\n"
+"\n"
+"torch.manual_seed(0)\n"
+"model = torch.nn.Sequential(torch.nn.Linear(2, 1))\n"
+"optimizer = torch.optim.SGD(model.parameters(), lr=0.1)\n"
+"observables = ol.generate(model, reductions=[\"l2_norm\"])\n"
+"\n"
+"source = ol.HookSource(model)\n"
+"source.attach()\n"
+"storage = ol.LocalStorage(\"./run\")\n"
+"runtime = ol.Runtime(\n"
+"    observables=ol.Pack(observables),\n"
+"    source=source,\n"
+"    sink=storage,\n"
+"    budget=ol.Budget(max_compute_ms=10.0),\n"
+")\n"
+"\n"
+"inputs = torch.tensor([[1.0, -1.0], [0.5, 0.25]])\n"
+"targets = torch.tensor([[0.5], [-0.25]])\n"
+"optimizer.zero_grad()\n"
+"predictions = model(inputs)\n"
+"loss = torch.nn.functional.mse_loss(predictions, targets)\n"
+"loss.backward()\n"
+"\n"
+"values = runtime.observe(step=0)\n"
+"assert values\n"
+"observable_id, value = next(iter(values.items()))\n"
+"stored_value = ol.query(storage, observable_id, step=0)\n"
+"assert stored_value == value\n"
+"print(f\"{observable_id}: {stored_value}\")\n"
+"\n"
+"optimizer.step()\n"
+"source.detach()\n"
+
+#: ../../../docs/quickstart.md:43
+msgid "What happened"
+msgstr "发生了什么"
+
+#: ../../../docs/quickstart.md:45
+msgid "`ol.generate()` inspected `model.named_parameters()` and produced one `l2_norm` observable for each parameter."
+msgstr "`ol.generate()` 检查 `model.named_parameters()`，为每个参数生成一个 `l2_norm` 可观测量。"
+
+#: ../../../docs/quickstart.md:46
+msgid "`HookSource` provided the current parameter tensors. Parameter reads are lazy, so this generated parameter-only example does not technically require hooks; `attach()` is shown because the same lifecycle is required for activation and gradient sources."
+msgstr "`HookSource` 提供当前参数张量。参数读取是惰性的，因此这个仅含生成参数的示例严格来说不需要 hooks；这里展示 `attach()`，因为 activation 和 gradient source 需要相同的生命周期。"
+
+#: ../../../docs/quickstart.md:47
+msgid "`loss.backward()` ran before `Runtime.observe()`. This ordering is required when a custom observable reads gradients."
+msgstr "`loss.backward()` 在 `Runtime.observe()` 之前运行。自定义可观测量读取 gradient 时必须保持这一顺序。"
+
+#: ../../../docs/quickstart.md:48
+msgid "`Runtime.observe()` returned values keyed by each observable's stable 16-character spec id."
+msgstr "`Runtime.observe()` 返回以各可观测量稳定的 16 字符 spec id 为键的数值。"
+
+#: ../../../docs/quickstart.md:49
+msgid "`LocalStorage` wrote SQLite metadata and NumPy NPZ payloads. `query()` read one value back by exact id and step."
+msgstr "`LocalStorage` 写入 SQLite 元数据和 NumPy NPZ payload。`query()` 按精确 id 和 step 读回一个值。"
+
+#: ../../../docs/quickstart.md:51
+msgid "Keep the lifecycle explicit"
+msgstr "保持显式生命周期"
+
+#: ../../../docs/quickstart.md:53
+msgid "For activation or gradient sources, attach before the matching forward/backward work, observe before the optimizer mutates parameters, and always detach when finished. `HookSource` retains the latest captured tensor and does not enforce per-step freshness."
+msgstr "对于 activation 或 gradient source，应在对应的 forward/backward 之前 attach，在 optimizer 修改参数之前 observe，并在结束后始终 detach。`HookSource` 保留最近捕获的张量，不强制检查每个 step 的新鲜度。"
+
+#: ../../../docs/quickstart.md:55
+msgid "Continue with {ref}`concepts` or the task-oriented {ref}`how-to-guides`."
+msgstr "继续阅读{ref}`核心概念 <concepts>`或面向任务的{ref}`操作指南 <how-to-guides>`。"

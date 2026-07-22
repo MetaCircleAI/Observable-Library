@@ -1,0 +1,35 @@
+{% set zh = language and language.startswith("zh") %}
+{% set pages = [
+  ("index", "概览" if zh else "Overview"),
+  ("installation", "安装" if zh else "Installation"),
+  ("quickstart", "快速入门" if zh else "Quickstart"),
+  ("concepts", "核心概念" if zh else "Core Concepts"),
+  ("usage", "操作指南" if zh else "How-to Guides"),
+  ("api", "API 参考" if zh else "API Reference"),
+  ("limitations", "当前限制" if zh else "Limitations")
+] %}
+<nav class="bd-docs-nav bd-links" aria-label="{{ '章节导航' if zh else 'Section Navigation' }}">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    {{ "章节导航" if zh else "Section Navigation" }}
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="nav bd-sidenav">
+      {% for page, label in pages %}
+        <li class="toctree-l1{% if pagename == page %} current active{% endif %}">
+          <a class="reference internal{% if pagename == page %} current active{% endif %}" href="{{ pathto(page) }}"{% if pagename == page %} aria-current="page"{% endif %}>{{ label }}</a>
+          {% if pagename == "api" and page == "api" %}
+            <ul class="nav bd-sidenav api-section-nav">
+              <li class="toctree-l2"><a class="reference internal" href="#core-types">{{ "核心类型" if zh else "Core Types" }}</a></li>
+              <li class="toctree-l2"><a class="reference internal" href="#generation-and-registry">{{ "生成与注册" if zh else "Generation And Registry" }}</a></li>
+              <li class="toctree-l2"><a class="reference internal" href="#tensor-sources">{{ "张量源" if zh else "Tensor Sources" }}</a></li>
+              <li class="toctree-l2"><a class="reference internal" href="#execution-and-budget">{{ "执行与预算" if zh else "Execution And Budget" }}</a></li>
+              <li class="toctree-l2"><a class="reference internal" href="#temporal-operators">{{ "时序算子" if zh else "Temporal Operators" }}</a></li>
+              <li class="toctree-l2"><a class="reference internal" href="#storage-and-query">{{ "存储与查询" if zh else "Storage And Query" }}</a></li>
+              <li class="toctree-l2"><a class="reference internal" href="#filter-foundation">{{ "过滤基础" if zh else "Filter Foundation" }}</a></li>
+            </ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>

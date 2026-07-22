@@ -1,0 +1,34 @@
+<div class="docs-footer bd-page-width">
+  <div class="docs-footer__grid">
+    <div class="docs-footer__brand">
+      <div class="docs-wordmark">
+        <span class="docs-wordmark__name">Observable Library</span>
+        <span class="docs-wordmark__version">0.1.0</span>
+      </div>
+      <p>
+        {% if language and language.startswith("zh") %}
+          生成并计算训练可观测量，无需重写训练循环。
+        {% else %}
+          Generate and compute training observables without changing your training loop.
+        {% endif %}
+      </p>
+    </div>
+    <nav aria-label="{% if language and language.startswith('zh') %}文档链接{% else %}Documentation links{% endif %}">
+      <p class="docs-footer__heading">{% if language and language.startswith("zh") %}文档{% else %}Docs{% endif %}</p>
+      <a href="{{ pathto('installation') }}">{% if language and language.startswith("zh") %}安装{% else %}Installation{% endif %}</a>
+      <a href="{{ pathto('quickstart') }}">{% if language and language.startswith("zh") %}快速入门{% else %}Quickstart{% endif %}</a>
+      <a href="{{ pathto('api') }}">{% if language and language.startswith("zh") %}API 参考{% else %}API Reference{% endif %}</a>
+      <a href="{{ pathto('limitations') }}">{% if language and language.startswith("zh") %}限制{% else %}Limitations{% endif %}</a>
+    </nav>
+    <nav aria-label="{% if language and language.startswith('zh') %}项目链接{% else %}Project links{% endif %}">
+      <p class="docs-footer__heading">{% if language and language.startswith("zh") %}项目{% else %}Project{% endif %}</p>
+      <a href="https://github.com/MetaCircleAI/Observable-Library">GitHub</a>
+      <a href="https://pypi.org/project/observable-library/">PyPI</a>
+      <a href="https://github.com/MetaCircleAI/Observable-Library/issues">{% if language and language.startswith("zh") %}问题跟踪{% else %}Issue tracker{% endif %}</a>
+    </nav>
+  </div>
+  <div class="docs-footer__meta">
+    <span>© 2026 Observable Library contributors · Apache-2.0</span>
+    <span>{% if language and language.startswith("zh") %}由 Sphinx 与 PyData Sphinx Theme 构建{% else %}Built with Sphinx and PyData Sphinx Theme{% endif %}</span>
+  </div>
+</div>

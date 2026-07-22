@@ -1,0 +1,19 @@
+<nav aria-label="Primary navigation">
+  <ul class="bd-navbar-elements navbar-nav">
+    <li class="drawer-header">
+      <span class="docs-wordmark">
+        <span class="docs-wordmark__name">Observable Library</span>
+        <span class="docs-wordmark__version">0.1.0</span>
+      </span>
+      <button class="pst-navbar-icon sidebar-toggle primary-toggle drawer-close" aria-label="{% if language and language.startswith('zh') %}关闭导航{% else %}Close navigation{% endif %}">
+        <span class="fa-solid fa-xmark"></span>
+      </button>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link nav-internal{% if pagename == 'index' %} active{% endif %}" href="{{ pathto(root_doc) }}"{% if pagename == 'index' %} aria-current="page"{% endif %}>
+        {% if language and language.startswith("zh") %}概览{% else %}Overview{% endif %}
+      </a>
+    </li>
+    {{ generate_header_nav_html(n_links_before_dropdown=theme_header_links_before_dropdown, dropdown_text=theme_header_dropdown_text) }}
+  </ul>
+</nav>

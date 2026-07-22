@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Observable Library contributors
+# This file is distributed under the same license as the Observable Library package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Observable Library 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:46+0800\n"
+"PO-Revision-Date: 2026-07-22 12:00+0800\n"
+"Last-Translator: Observable Library contributors\n"
+"Language-Team: zh_CN\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/limitations.md:2
+msgid "Limitations"
+msgstr "限制"
+
+#: ../../../docs/limitations.md:4
+msgid "Observable Library 0.1.0 is a deliberately small, headless package. These boundaries are part of the released behavior."
+msgstr "Observable Library 0.1.0 是一个有意保持小巧的 headless 包。以下边界属于已发布行为。"
+
+#: ../../../docs/limitations.md:6
+msgid "Generation is parameter-only"
+msgstr "生成仅覆盖参数"
+
+#: ../../../docs/limitations.md:8
+msgid "`generate()` enumerates `model.named_parameters()`. It has no source allowlist and does not generate activation, gradient, or loss observables. Filter the returned list to reduce Runtime work or construct a custom `Observable` for another source."
+msgstr "`generate()` 枚举 `model.named_parameters()`。它没有 source allowlist，也不生成 activation、gradient 或 loss 可观测量。可以过滤返回列表以减少 Runtime 工作，或为其他 source 构造自定义 `Observable`。"
+
+#: ../../../docs/limitations.md:10
+msgid "Selection supports only all values"
+msgstr "Selection 只支持全部值"
+
+#: ../../../docs/limitations.md:12
+msgid "The only supported selector is `selector=\"all\"`. Slice, axis, and semantic selectors are not part of 0.1.0."
+msgstr "唯一支持的 selector 是 `selector=\"all\"`。Slice、axis 和语义 selector 不属于 0.1.0。"
+
+#: ../../../docs/limitations.md:14
+msgid "Hooks retain the latest value"
+msgstr "Hooks 保留最近的值"
+
+#: ../../../docs/limitations.md:16
+msgid "`HookSource.attach()` installs broad hooks on top-level child activations and trainable parameter gradients. It retains the latest captured tensor without checking that it belongs to the current step. Run the matching forward/backward before every observation and call `detach()` when finished."
+msgstr "`HookSource.attach()` 会在顶层子模块 activation 和可训练参数 gradient 上安装宽范围 hooks。它保留最近捕获的张量，不检查该张量是否属于当前 step。每次观测前都要执行匹配的 forward/backward，结束后调用 `detach()`。"
+
+#: ../../../docs/limitations.md:18
+msgid "Loss is not discovered automatically. Call `record_loss(loss, step)` before observing a custom `source=\"loss\"` spec."
+msgstr "Loss 不会被自动发现。观测自定义 `source=\"loss\"` spec 前，请调用 `record_loss(loss, step)`。"
+
+#: ../../../docs/limitations.md:20
+msgid "Budgeting uses estimates"
+msgstr "Budget 使用估算值"
+
+#: ../../../docs/limitations.md:22
+msgid "The scheduler sums `budget_hint[\"compute_ms\"]` estimates. It does not measure execution time, learn a cost model, or change a spec's frequency. A missing custom estimate counts as zero."
+msgstr "调度器累加 `budget_hint[\"compute_ms\"]` 估算值。它不测量执行时间、不学习成本模型，也不修改 spec 的 frequency。缺失的自定义估算按零计算。"
+
+#: ../../../docs/limitations.md:24
+msgid "Temporal metadata does not execute"
+msgstr "Temporal 元数据不会自动执行"
+
+#: ../../../docs/limitations.md:26
+msgid "The `temporal` field contributes to `ObservableSpec.id`, but Runtime does not automatically call `delta`, `ema`, `slope`, or `rolling_std`. Apply those functions to explicit histories."
+msgstr "`temporal` 字段参与 `ObservableSpec.id`，但 Runtime 不会自动调用 `delta`、`ema`、`slope` 或 `rolling_std`。请将这些函数应用到显式历史数据。"
+
+#: ../../../docs/limitations.md:28
+msgid "Storage and query are intentionally narrow"
+msgstr "存储与查询有意保持窄边界"
+
+#: ../../../docs/limitations.md:30
+msgid "`LocalStorage` is a convenience `ValueSink`: SQLite metadata plus NumPy NPZ payloads. `query()` reads by exact observable id and step only. There is no query by source, reduction, tag, or display label."
+msgstr "`LocalStorage` 是便捷的 `ValueSink`：SQLite 元数据加 NumPy NPZ payload。`query()` 只按精确可观测量 id 和 step 读取，不支持按 source、reduction、tag 或显示标签查询。"
+
+#: ../../../docs/limitations.md:32
+msgid "No application surface"
+msgstr "没有应用层界面"
+
+#: ../../../docs/limitations.md:34
+msgid "Version 0.1.0 has no CLI, Web UI, notebook product, dataset downloader, or general analysis service. Later roadmap ideas are not current package capabilities."
+msgstr "0.1.0 没有 CLI、Web UI、notebook 产品、数据集下载器或通用分析服务。后续路线图中的想法不属于当前包能力。"
