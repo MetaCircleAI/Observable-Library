@@ -8,7 +8,6 @@ on:
       - "docs/**"
       - "observable_library/**"
       - "scripts/build_docs.py"
-      - "scripts/publish_docs.sh"
       - "tests/test_web_docs.py"
       - "pyproject.toml"
   pull_request:
@@ -17,7 +16,6 @@ on:
       - "docs/**"
       - "observable_library/**"
       - "scripts/build_docs.py"
-      - "scripts/publish_docs.sh"
       - "tests/test_web_docs.py"
       - "pyproject.toml"
   workflow_dispatch:
@@ -42,11 +40,11 @@ jobs:
           cache: pip
       - name: Install documentation dependencies
         run: python -m pip install -e ".[docs]"
-      - name: Build the exact Pages artifact
+      - name: Build documentation artifact
         run: python scripts/build_docs.py --output-dir build/web-docs
       - name: Run documentation policy tests
         run: python -m pytest tests/test_web_docs.py -q
-      - name: Upload Pages artifact
+      - name: Upload documentation artifact
         uses: actions/upload-artifact@v7
         with:
           name: web-docs-${{ github.sha }}
@@ -54,26 +52,3 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
-
-  deploy:
-    name: Publish gh-pages
-    needs: build
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    environment: docs-production
-    steps:
-      - uses: actions/checkout@v7
-      - name: Download the artifact built by this run
-        uses: actions/download-artifact@v8
-        with:
-          name: web-docs-${{ github.sha }}
-          path: build/web-docs
-      - name: Publish by normal fast-forward push
-        run: scripts/publish_docs.sh build/web-docs
-        env:
-          DOCS_DEPLOY_TOKEN: ${{ secrets.DOCS_DEPLOY_TOKEN }}
-          DOCS_TARGET_REPOSITORY: MetaCircleAI/Observable-Library
-          DOCS_TARGET_BRANCH: gh-pages
-          DOCS_GIT_NAME: Observable Library Docs Bot
-          DOCS_GIT_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com

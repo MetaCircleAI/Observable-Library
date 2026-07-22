@@ -49,12 +49,12 @@ def test_docs_extra_declares_the_sphinx_toolchain() -> None:
         assert any(item.lower().startswith(package) for item in docs)
 
 
-def test_build_site_creates_one_pages_artifact(tmp_path: Path) -> None:
+def test_build_site_creates_one_documentation_artifact(tmp_path: Path) -> None:
     output_dir = tmp_path / "site"
 
     build_site(ROOT, output_dir)
 
-    for relative in ["index.html", "zh/index.html", ".nojekyll", "404.html"]:
+    for relative in ["index.html", "zh/index.html", "404.html"]:
         assert (output_dir / relative).is_file()
 
 

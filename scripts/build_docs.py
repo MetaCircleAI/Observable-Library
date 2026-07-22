@@ -44,14 +44,12 @@ def build_site(repo_root: Path, output_dir: Path) -> None:
     source_dir = repo_root / "docs"
     _run_sphinx(source_dir, output_dir, "en")
     _run_sphinx(source_dir, output_dir / "zh", "zh_CN")
-    (output_dir / ".nojekyll").touch()
-
     if not (output_dir / "404.html").is_file():
         raise RuntimeError("English build did not produce 404.html")
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build the bilingual Pages artifact")
+    parser = argparse.ArgumentParser(description="Build the bilingual documentation artifact")
     parser.add_argument(
         "--output-dir",
         type=Path,

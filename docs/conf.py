@@ -37,7 +37,6 @@ myst_heading_anchors = 3
 
 html_theme = "pydata_sphinx_theme"
 html_title = f"{project} {version}"
-html_baseurl = "https://metacircleai.github.io/Observable-Library/"
 templates_path = ["_templates"]
 html_static_path = ["_static"]
 html_css_files = ["css/tokens.css", "css/site.css"]
