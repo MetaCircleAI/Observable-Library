@@ -109,8 +109,8 @@ msgid "`max_compute_ms` must be finite and non-negative when set. An observable 
 msgstr "设置 `max_compute_ms` 时，其值必须有限且非负。当可观测量估算值超过剩余 budget 时会被跳过。调度器不测量执行时间，也不改变 spec 的 frequency。"
 
 #: ../../../docs/api.md:86
-msgid "`generate()` gives generated observables a small positive shape-aware `heuristic`, with a conservative `0.01` ms floor. It is scheduling input only; custom observables should provide explicit `budget_hint` values when a budget matters. M2 makes no `M3` cost-accuracy claim."
-msgstr "`generate()` 为生成的可观测量提供小的正数 shape-aware `heuristic`，保守下限为 `0.01` ms。它只用于调度输入；budget 重要时，自定义可观测量应提供显式 `budget_hint`。M2 不作 `M3` 成本准确性声明。"
+msgid "`generate()` gives generated observables a small positive shape-aware `heuristic`, with a conservative `0.01` ms floor. It is scheduling input only; custom observables should provide explicit `budget_hint` values when a budget matters. M2 makes no `M3` cost-accuracy claim: the heuristic is not a calibrated cost-accuracy estimate."
+msgstr "`generate()` 为生成的可观测量提供小的正数 shape-aware `heuristic`，保守下限为 `0.01` ms。它只用于调度输入；budget 重要时，自定义可观测量应提供显式 `budget_hint`。M2 不作 `M3` 成本准确性声明：该 heuristic 不是经过校准的成本准确性估算。"
 
 #: ../../../docs/api.md:91
 msgid "`OfflineAnalyzer(observables, source, budget=None, sink=None)` exposes `analyze(step, **context)` and delegates to the same runtime compute path."

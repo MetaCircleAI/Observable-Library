@@ -86,7 +86,7 @@ source lookup.
 - `generate()` gives generated observables a small positive shape-aware
   `heuristic`, with a conservative `0.01` ms floor. It is scheduling input only;
   custom observables should provide explicit `budget_hint` values when a budget
-  matters. M2 makes no `M3` cost-accuracy claim.
+  matters. M2 makes no `M3` cost-accuracy claim: the heuristic is not a calibrated cost-accuracy estimate.
 
 `OfflineAnalyzer(observables, source, budget=None, sink=None)` exposes
 `analyze(step, **context)` and delegates to the same runtime compute path.

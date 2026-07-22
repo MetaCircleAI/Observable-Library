@@ -49,7 +49,9 @@ def build_site(repo_root: Path, output_dir: Path) -> None:
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build the bilingual documentation artifact")
+    parser = argparse.ArgumentParser(
+        description="Build the bilingual documentation artifact"
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
