@@ -87,19 +87,21 @@ def test_readme_quickstart_prints_and_reads_back_a_stored_observation(
     assert str(namespace["stored_value"]) in output
 
 
-def test_readme_links_to_canonical_api_and_shipped_examples() -> None:
+def test_readme_links_to_canonical_docs_and_shipped_examples() -> None:
     readme = README.read_text(encoding="utf-8")
-    base_url = "https://github.com/MetaCircleAI/Observable-Library/blob/main/"
 
-    paths = [
-        "docs/api.md",
-        "docs/usage.md",
+    docs_url = "https://metacircleai.github.io/Observable-Library/"
+    for path in ["api.html", "usage.html"]:
+        assert f"{docs_url}{path}" in readme
+
+    source_url = "https://github.com/MetaCircleAI/Observable-Library/blob/main/"
+    example_paths = [
         *(f"examples/{path.name}" for path in ONLINE_EXAMPLES),
         ADVANCED_ONLINE_EXAMPLE.relative_to(ROOT).as_posix(),
         OFFLINE_EXAMPLE.relative_to(ROOT).as_posix(),
     ]
-    for path in paths:
-        assert f"{base_url}{path}" in readme
+    for path in example_paths:
+        assert f"{source_url}{path}" in readme
 
 
 def test_readme_states_the_exact_local_storage_boundary() -> None:
