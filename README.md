@@ -2,9 +2,9 @@
 
 Headless Python package for generating and computing training observables.
 
-The source checkout includes the current
-[API reference](https://github.com/MetaCircleAI/Observable-Library/blob/main/docs/api.md)
-and a [practical usage guide](https://github.com/MetaCircleAI/Observable-Library/blob/main/docs/usage.md).
+The documentation site includes the current
+[API reference](https://metacircleai.github.io/Observable-Library/api.html)
+and a [practical usage guide](https://metacircleai.github.io/Observable-Library/usage.html).
 
 Core boundary:
 
@@ -143,7 +143,7 @@ source.detach()
   id and step readback only; there is no lookup by display name, source, or
   reduction.
 - The current public contract supports only `selector="all"`. See the
-  [practical usage guide](https://github.com/MetaCircleAI/Observable-Library/blob/main/docs/usage.md)
+  [practical usage guide](https://metacircleai.github.io/Observable-Library/usage.html)
   for hook lifetime, source freshness, custom observable, transform, filter,
   and identity details.
 

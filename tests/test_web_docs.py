@@ -62,6 +62,12 @@ def test_build_site_creates_one_documentation_artifact(tmp_path: Path) -> None:
         assert (output_dir / relative).is_file()
 
 
+def test_docs_config_uses_the_github_pages_url() -> None:
+    conf = (DOCS / "conf.py").read_text(encoding="utf-8")
+
+    assert 'html_baseurl = "https://metacircleai.github.io/Observable-Library/"' in conf
+
+
 def test_web_docs_have_the_complete_top_level_navigation() -> None:
     assert all(path.is_file() for path in WEB_DOCS)
     index = (DOCS / "index.md").read_text(encoding="utf-8")

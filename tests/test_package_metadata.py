@@ -57,7 +57,7 @@ def test_pyproject_declares_canonical_project_urls() -> None:
 
     assert metadata["project"]["urls"] == {
         "Homepage": "https://github.com/MetaCircleAI/Observable-Library",
-        "Documentation": "https://github.com/MetaCircleAI/Observable-Library/blob/main/docs/api.md",
+        "Documentation": "https://metacircleai.github.io/Observable-Library/",
         "Repository": "https://github.com/MetaCircleAI/Observable-Library",
         "Issues": "https://github.com/MetaCircleAI/Observable-Library/issues",
     }

@@ -25,7 +25,7 @@ permissions:
 
 concurrency:
   group: docs-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -40,15 +40,32 @@ jobs:
           cache: pip
       - name: Install documentation dependencies
         run: python -m pip install -e ".[docs]"
-      - name: Build documentation artifact
+      - name: Build GitHub Pages artifact
         run: python scripts/build_docs.py --output-dir build/web-docs
       - name: Run documentation policy tests
         run: python -m pytest tests/test_web_docs.py -q
-      - name: Upload documentation artifact
-        uses: actions/upload-artifact@v7
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
-          name: web-docs-${{ github.sha }}
           path: build/web-docs
           include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 7
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
